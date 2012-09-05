@@ -63,11 +63,13 @@ public class RequestPhotos extends AsyncTask<Integer, Void, JSONArray> {
 	
 	protected void onPostExecute(JSONArray photos){
 		
-		int unit = (flow.getWidth()/4);
+		int margin = 5;
+		
+		int unit = ((flow.getWidth() - (margin*5))/4);
 		int[] images_used = new int[]{0};
 		
 		while(images_used[0] < photos.length()){
-			flow.addView(FlowGenerator.generateFlow(photos, unit, flow.getContext(), new LinearLayout.LayoutParams(unit*4, unit*3), images_used));		
+			flow.addView(FlowGenerator.generateFlow(photos, unit, flow.getContext(), new LinearLayout.LayoutParams(flow.getWidth(), flow.getWidth()/2), images_used, margin));		
 			flow.invalidate();
 		}
 				

@@ -11,13 +11,13 @@ import android.widget.RelativeLayout;
 
 public class FlowGenerator {
 	
-	public static RelativeLayout generateFlow(JSONArray photos, int unit, Context context, LinearLayout.LayoutParams lp, int[] images_used){
+	public static RelativeLayout generateFlow(JSONArray photos, int unit, Context context, LinearLayout.LayoutParams lp, int[] images_used, int margin){
 		RelativeLayout rl = new RelativeLayout(context);
 		rl.setLayoutParams(lp);
 		
 		ImageView iv;
 		RelativeLayout.LayoutParams params;		
-		int[][] matrix = new int[][]{{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}};
+		int[][] matrix = new int[2][4];
 				
 		for(int y = 0; y < matrix.length; y++){
 			for(int x = 0; x < matrix[0].length; x++){
@@ -36,12 +36,12 @@ public class FlowGenerator {
 					height++;
 					
 					iv = new ImageView(context);
-					params = new RelativeLayout.LayoutParams(unit * width, unit * height);
-					params.leftMargin = x * unit;
-					params.topMargin = y * unit;
+					params = new RelativeLayout.LayoutParams((unit * width) + ((width-1) * margin), (unit * height) + ((height-1) * margin));
+					params.leftMargin = (x * unit) + ((x+1) * margin);
+					params.topMargin = y * unit + ((y+1) * margin);
 					iv.setLayoutParams(params);
 					iv.setScaleType(ScaleType.CENTER_CROP);
-					//iv.setBackgroundColor((int)(Math.random()*0xFFFFFF) + 0xFF000000);
+					
 					FetchImage fi = new FetchImage(iv, width*unit, height*unit);					
 					try{
 						fi.execute(photos.getJSONObject(images_used[0]));

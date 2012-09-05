@@ -29,9 +29,6 @@ public class FetchImage extends AsyncTask<JSONObject, Void, Bitmap> {
 		height = inHeight;
 		width = inWidth;
 		opt = new BitmapFactory.Options();
-		opt.inDensity = 160;
-		opt.inTargetDensity = 160;
-		
 	}
 	
 	@Override
@@ -40,7 +37,7 @@ public class FetchImage extends AsyncTask<JSONObject, Void, Bitmap> {
 		URL url = null;
 		Bitmap retval = null;
 		
-		JSONObject photo;
+		JSONObject photo = null;
 		
 		String base = "https://api.500px.com/v1/photos/";
 		try {
@@ -54,11 +51,19 @@ public class FetchImage extends AsyncTask<JSONObject, Void, Bitmap> {
 			conn.connect();
 			
 			BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-			
+						
 			String text = reader.readLine();			
-			photo = new JSONObject(text);	
-			
+			photo = new JSONObject(text);
 			conn.disconnect();
+									
+			int img_height, img_width;
+			
+			img_height = photo.getJSONObject("photo").getInt("height");
+			img_width = photo.getJSONObject("photo").getInt("width");
+			
+			int sample = findSample(img_width, img_height, width, height);
+			
+			//opt.inSampleSize = sample;
 			
 			
 			//Get Bitmap
@@ -66,10 +71,11 @@ public class FetchImage extends AsyncTask<JSONObject, Void, Bitmap> {
 			HttpURLConnection conn2 = (HttpURLConnection)url.openConnection();
 			conn2.connect();
 			
-			//retval = Bitmap.createBitmap(BitmapFactory.decodeStream(conn2.getInputStream()), 0, 0, width, height);
-			
-						
 			retval = BitmapFactory.decodeStream(conn2.getInputStream(), null, opt);
+			
+			
+			
+			
 			
 			
 			
@@ -83,9 +89,25 @@ public class FetchImage extends AsyncTask<JSONObject, Void, Bitmap> {
 	
 	protected void onPostExecute(Bitmap bmp){
 		image.setImageBitmap(bmp);
-		image.invalidate();	
+		
 	}
 
-	
+	public int findSample(int img_width, int img_height, int req_width, int req_height){
+		
+		double width_ratio = (img_width / req_width);
+		double height_ratio = (img_height / req_height);
+		
+		if(width_ratio > 5)
+			width_ratio = 5;
+		if(height_ratio > 5)
+			height_ratio = 5;
+		
+		if(width_ratio < height_ratio)
+			return (int)width_ratio;
+		else
+			return (int)height_ratio;
+		
+		
+	}
 	
 }
