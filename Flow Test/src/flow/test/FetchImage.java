@@ -2,14 +2,13 @@ package flow.test;
 
 
 import java.io.BufferedReader;
-import java.io.InputStream;
+
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.graphics.Bitmap;
@@ -17,22 +16,25 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.widget.ImageView;
 
-public class FetchImage extends AsyncTask<JSONObject, Void, Bitmap> {
+public class FetchImage extends AsyncTask<Picture, Void, Bitmap> {
 
 	ImageView image;
 	BitmapFactory.Options opt;
 	int height, width;
+	double ratio;
 	
 	public FetchImage(ImageView inImage, int inWidth, int inHeight){
-		image = inImage;
-		
+		image = inImage;		
 		height = inHeight;
 		width = inWidth;
+		
+		ratio = (double)width/(double)height;
+		
 		opt = new BitmapFactory.Options();
 	}
 	
 	@Override
-	protected Bitmap doInBackground(JSONObject... param) {
+	protected Bitmap doInBackground(Picture... param) {
 
 		URL url = null;
 		Bitmap retval = null;
@@ -43,7 +45,7 @@ public class FetchImage extends AsyncTask<JSONObject, Void, Bitmap> {
 		try {
 			
 			//Get image info
-			base +=  param[0].getString("id") + "?image_size=4&consumer_key=0lS9iBNZjRvSIdyPX42LW04uU3g7KiMvhvGDXqOW";
+			base +=  param[0].id + "?image_size=4&consumer_key=0lS9iBNZjRvSIdyPX42LW04uU3g7KiMvhvGDXqOW";
 			url = new URL(base);
 			
 			HttpsURLConnection conn = (HttpsURLConnection)url.openConnection();
@@ -55,30 +57,44 @@ public class FetchImage extends AsyncTask<JSONObject, Void, Bitmap> {
 			String text = reader.readLine();			
 			photo = new JSONObject(text);
 			conn.disconnect();
-									
-			int img_height, img_width;
 			
-			img_height = photo.getJSONObject("photo").getInt("height");
-			img_width = photo.getJSONObject("photo").getInt("width");
+			param[0].url = photo.getJSONObject("photo").getJSONArray("images").getJSONObject(0).getString("url");
 			
-			int sample = findSample(img_width, img_height, width, height);
-			
+			/*
+			if(param[0].aRatio > 1.0){
+				opt.inDensity = param[0].width;
+				opt.inTargetDensity = width;
+			}
+			else{
+				opt.inDensity = param[0].height;
+				opt.inTargetDensity = height;
+			}
+			*/
 			//opt.inSampleSize = sample;
 			
 			
 			//Get Bitmap
-			url = new URL(photo.getJSONObject("photo").getJSONArray("images").getJSONObject(0).getString("url"));
+			url = new URL(param[0].url);
 			HttpURLConnection conn2 = (HttpURLConnection)url.openConnection();
 			conn2.connect();
 			
-			retval = BitmapFactory.decodeStream(conn2.getInputStream(), null, opt);
 			
+			Bitmap large = BitmapFactory.decodeStream(conn2.getInputStream());
 			
+			double width_ratio = ((double)param[0].width/(double)width);
+			double height_ratio = ((double)param[0].height/(double)height);
 			
-			
-			
-			
-			
+			if(ratio < 1){
+				int new_height = (int) ((double)param[0].height / ((double)param[0].width/(double)width));
+				int new_width =  (int) ((double)param[0].width / ((double)param[0].width/(double)width));
+				retval = Bitmap.createScaledBitmap(large, new_width, new_height, true);
+			}
+			else{
+				int new_height = (int) ((double)param[0].height / ((double)param[0].height/(double)height));
+				int new_width =  (int) ((double)param[0].width / ((double)param[0].height/(double)height));
+				retval = Bitmap.createScaledBitmap(large, new_width, new_height, true);
+			}
+						
 		} catch (Exception e) {
 			e.printStackTrace();
 		}		

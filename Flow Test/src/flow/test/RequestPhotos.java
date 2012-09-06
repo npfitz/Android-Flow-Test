@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.Vector;
+
 import javax.net.ssl.HttpsURLConnection;
 
 
@@ -17,7 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
 
-public class RequestPhotos extends AsyncTask<Integer, Void, JSONArray> {
+public class RequestPhotos extends AsyncTask<Integer, Void, Vector<Picture>> {
 
 	LinearLayout flow;
 	
@@ -26,50 +28,52 @@ public class RequestPhotos extends AsyncTask<Integer, Void, JSONArray> {
 	}
 	
 	@Override
-	protected JSONArray doInBackground(Integer... page) {
+	protected Vector<Picture> doInBackground(Integer... page) {
 		
 		URL url = null;
-		JSONArray retval = null;
+		Vector<Picture> retval = new Vector<Picture>();
 		
-		try{
-			url = new URL("https://api.500px.com/v1/photos?feature=popular&consumer_key=0lS9iBNZjRvSIdyPX42LW04uU3g7KiMvhvGDXqOW&page="+page[0]);
-		}
-		catch(Exception e){
-			System.out.println(e.toString());			
-		}
-		
-		try{
+		for(int j = 1; j < 6; j++){
+			try{
+				url = new URL("https://api.500px.com/v1/photos?feature=popular&consumer_key=0lS9iBNZjRvSIdyPX42LW04uU3g7KiMvhvGDXqOW&page="+j);
+			}
+			catch(Exception e){
+				System.out.println(e.toString());			
+			}
 			
-			HttpsURLConnection conn = (HttpsURLConnection)url.openConnection();
-			conn.setRequestMethod("GET");
-			conn.connect();
-			
-			InputStream in = conn.getInputStream();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-			String text = reader.readLine();
-			
-			String[] split = text.split("\"photos\":");
-			
-			retval = new JSONArray(split[1]);
-			
-			JSONObject temp = retval.getJSONObject(0).getJSONObject("user");
-						
-		}
-		catch(Exception e){			
-			System.out.println(e.toString());
-		}		
+			try{
+				
+				HttpsURLConnection conn = (HttpsURLConnection)url.openConnection();
+				conn.setRequestMethod("GET");
+				conn.connect();
+				
+				InputStream in = conn.getInputStream();
+				BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+				String text = reader.readLine();
+				
+				String[] split = text.split("\"photos\":");
+				
+				JSONArray PicArray = new JSONArray(split[1]);
+				
+				for(int i = 0; i < PicArray.length(); i++)
+					retval.add(new Picture(PicArray.getJSONObject(i)));			
+							
+			}
+			catch(Exception e){			
+				System.out.println(e.toString());
+			}		
+		}	
 		return retval;
 	}
 	
-	protected void onPostExecute(JSONArray photos){
+	protected void onPostExecute(Vector<Picture> photos){
 		
 		int margin = 5;
 		
 		int unit = ((flow.getWidth() - (margin*5))/4);
-		int[] images_used = new int[]{0};
-		
-		while(images_used[0] < photos.length()){
-			flow.addView(FlowGenerator.generateFlow(photos, unit, flow.getContext(), new LinearLayout.LayoutParams(flow.getWidth(), flow.getWidth()/2), images_used, margin));		
+				
+		while(!photos.isEmpty()){
+			flow.addView(FlowGenerator.generateFlow(photos, unit, flow.getContext(), new LinearLayout.LayoutParams(flow.getWidth(), flow.getWidth()/2), margin));		
 			flow.invalidate();
 		}
 				
