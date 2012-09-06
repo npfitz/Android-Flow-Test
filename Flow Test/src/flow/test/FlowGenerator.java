@@ -102,7 +102,7 @@ public class FlowGenerator {
 		double reqRatio = (double)width/(double)height;
 		
 		for(int i = 0; i < photos.size(); i++){
-			if(Math.abs(photos.elementAt(i).aRatio - reqRatio) < 0.2)
+			if(Math.abs(photos.elementAt(i).aRatio - reqRatio) < 0.15)
 				return i;
 		}
 		

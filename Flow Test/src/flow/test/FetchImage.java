@@ -71,11 +71,23 @@ public class FetchImage extends AsyncTask<Picture, Void, Bitmap> {
 			int real_height = opt.outHeight;
 			int real_width = opt.outWidth;
 			
-			if((double)width/(double)height > 1.0)
-				retval = Bitmap.createScaledBitmap(large, (int)(real_width / ((double)real_width/(double)width)), (int)(real_height / ((double)real_width/(double)width)), true);				
-			else
-				retval = Bitmap.createScaledBitmap(large, (int)(real_width / ((double)real_height/(double)height)), (int)(real_height / ((double)real_height/(double)height)), true);				
-			
+			if((double)width/(double)height > 1.0){
+				int new_height = (int)(real_height / ((double)real_width/(double)width));
+				int new_width = (int)(real_width / ((double)real_width/(double)width));
+				if(new_height - height > 0)
+					retval = Bitmap.createBitmap(Bitmap.createScaledBitmap(large, new_width, new_height , true), 0, (new_height - height)/2, width, height);
+				else
+					retval = Bitmap.createScaledBitmap(large, new_width, new_height , true);
+			}
+			else{
+				int new_height = (int)(real_height / ((double)real_height/(double)height));
+				int new_width = (int)(real_width / ((double)real_height/(double)height));
+				
+				if(new_width - width > 0)
+					retval = Bitmap.createBitmap(Bitmap.createScaledBitmap(large, new_width, new_height , true), (new_width - width)/2, 0, width, height);			
+				else
+					retval = Bitmap.createScaledBitmap(large, new_width, new_height , true);
+			}
 			
 			
 						
