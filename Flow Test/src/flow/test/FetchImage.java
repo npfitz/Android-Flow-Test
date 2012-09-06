@@ -60,40 +60,24 @@ public class FetchImage extends AsyncTask<Picture, Void, Bitmap> {
 			
 			param[0].url = photo.getJSONObject("photo").getJSONArray("images").getJSONObject(0).getString("url");
 			
-			/*
-			if(param[0].aRatio > 1.0){
-				opt.inDensity = param[0].width;
-				opt.inTargetDensity = width;
-			}
-			else{
-				opt.inDensity = param[0].height;
-				opt.inTargetDensity = height;
-			}
-			*/
-			//opt.inSampleSize = sample;
-			
-			
 			//Get Bitmap
 			url = new URL(param[0].url);
 			HttpURLConnection conn2 = (HttpURLConnection)url.openConnection();
 			conn2.connect();
 			
 			
-			Bitmap large = BitmapFactory.decodeStream(conn2.getInputStream());
+			Bitmap large = BitmapFactory.decodeStream(conn2.getInputStream(), null, opt);
 			
-			double width_ratio = ((double)param[0].width/(double)width);
-			double height_ratio = ((double)param[0].height/(double)height);
+			int real_height = opt.outHeight;
+			int real_width = opt.outWidth;
 			
-			if(ratio < 1){
-				int new_height = (int) ((double)param[0].height / ((double)param[0].width/(double)width));
-				int new_width =  (int) ((double)param[0].width / ((double)param[0].width/(double)width));
-				retval = Bitmap.createScaledBitmap(large, new_width, new_height, true);
-			}
-			else{
-				int new_height = (int) ((double)param[0].height / ((double)param[0].height/(double)height));
-				int new_width =  (int) ((double)param[0].width / ((double)param[0].height/(double)height));
-				retval = Bitmap.createScaledBitmap(large, new_width, new_height, true);
-			}
+			if((double)width/(double)height > 1.0)
+				retval = Bitmap.createScaledBitmap(large, (int)(real_width / ((double)real_width/(double)width)), (int)(real_height / ((double)real_width/(double)width)), true);				
+			else
+				retval = Bitmap.createScaledBitmap(large, (int)(real_width / ((double)real_height/(double)height)), (int)(real_height / ((double)real_height/(double)height)), true);				
+			
+			
+			
 						
 		} catch (Exception e) {
 			e.printStackTrace();
