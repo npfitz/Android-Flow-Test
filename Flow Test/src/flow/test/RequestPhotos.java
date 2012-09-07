@@ -33,9 +33,11 @@ public class RequestPhotos extends AsyncTask<Integer, Void, Vector<Picture>> {
 		URL url = null;
 		Vector<Picture> retval = new Vector<Picture>();
 		
-		for(int j = 1; j < 6; j++){
+		String feature = ((FlowTest)(flow.getContext().getApplicationContext())).getFeature();
+		
+		for(int j = 1; j < 2; j++){
 			try{
-				url = new URL("https://api.500px.com/v1/photos?feature=popular&consumer_key=0lS9iBNZjRvSIdyPX42LW04uU3g7KiMvhvGDXqOW&page="+j);
+				url = new URL("https://api.500px.com/v1/photos?feature="+feature+"&consumer_key=0lS9iBNZjRvSIdyPX42LW04uU3g7KiMvhvGDXqOW&page="+j);
 			}
 			catch(Exception e){
 				System.out.println(e.toString());			
@@ -73,7 +75,7 @@ public class RequestPhotos extends AsyncTask<Integer, Void, Vector<Picture>> {
 		int unit = ((flow.getWidth() - (margin*5))/4);
 				
 		while(!photos.isEmpty()){
-			flow.addView(FlowGenerator.generateFlow(photos, unit, flow.getContext(), new LinearLayout.LayoutParams(flow.getWidth(), flow.getWidth()/2), margin));		
+			flow.addView(FlowGenerator.generateFlow(photos, unit, flow.getContext(), new LinearLayout.LayoutParams(flow.getWidth(), (flow.getWidth()/2) - margin), margin));		
 			flow.invalidate();
 		}
 				

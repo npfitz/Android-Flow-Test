@@ -15,6 +15,9 @@ public class Picture {
 	String url;	
 	boolean valid;
 	
+	public Picture(String inID){
+		id = inID;
+	}
 	
 	public Picture(JSONObject JSONpic){
 		

@@ -45,16 +45,22 @@ public class FlowGenerator {
 					iv.setBackgroundColor(0xFF999999);
 					iv.setScaleType(ScaleType.CENTER_CROP);
 					
+					
 					int image_used = selectImage(photos, height, width);
 					
+					iv.setOnClickListener(new ImageClick(photos.elementAt(image_used)));
 					
-					FetchImage fi = new FetchImage(iv, width*unit, height*unit);					
+					((FlowTest)context.getApplicationContext()).getThreadManager().addTask(new FetchImage(iv, width*unit, height*unit, photos.elementAt(image_used)));
+					
+					/*
+					FetchImage fi = new FetchImage(iv, width*unit, height*unit, photos.elementAt(image_used));					
 					try{
-						fi.execute(photos.elementAt(image_used));
+						fi.execute();
 					}
 					catch(Exception e){
 						System.out.println(e.toString());
 					}
+					*/
 					
 					photos.remove(image_used);
 					rl.addView(iv);

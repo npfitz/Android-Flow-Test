@@ -16,14 +16,16 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.widget.ImageView;
 
-public class FetchImage extends AsyncTask<Picture, Void, Bitmap> {
+public class FetchImage extends AsyncTask<Void, Void, Bitmap> {
 
 	ImageView image;
 	BitmapFactory.Options opt;
 	int height, width;
 	double ratio;
+	Picture pic;
+	ThreadManager manager;
 	
-	public FetchImage(ImageView inImage, int inWidth, int inHeight){
+	public FetchImage(ImageView inImage, int inWidth, int inHeight, Picture inPic){
 		image = inImage;		
 		height = inHeight;
 		width = inWidth;
@@ -31,10 +33,25 @@ public class FetchImage extends AsyncTask<Picture, Void, Bitmap> {
 		ratio = (double)width/(double)height;
 		
 		opt = new BitmapFactory.Options();
+		Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+		
+		pic = inPic;
+	}
+	
+	public FetchImage(ImageView inImage, Picture inPic){
+		image = inImage;		
+		height = 0;
+		width = 0;
+		pic = inPic;
+		Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
+	}
+	
+	public void setManager(ThreadManager inManager){
+		manager = inManager;
 	}
 	
 	@Override
-	protected Bitmap doInBackground(Picture... param) {
+	protected Bitmap doInBackground(Void...param) {
 
 		URL url = null;
 		Bitmap retval = null;
@@ -45,7 +62,7 @@ public class FetchImage extends AsyncTask<Picture, Void, Bitmap> {
 		try {
 			
 			//Get image info
-			base +=  param[0].id + "?image_size=4&consumer_key=0lS9iBNZjRvSIdyPX42LW04uU3g7KiMvhvGDXqOW";
+			base +=  pic.id + "?image_size=4&consumer_key=0lS9iBNZjRvSIdyPX42LW04uU3g7KiMvhvGDXqOW";
 			url = new URL(base);
 			
 			HttpsURLConnection conn = (HttpsURLConnection)url.openConnection();
@@ -58,15 +75,18 @@ public class FetchImage extends AsyncTask<Picture, Void, Bitmap> {
 			photo = new JSONObject(text);
 			conn.disconnect();
 			
-			param[0].url = photo.getJSONObject("photo").getJSONArray("images").getJSONObject(0).getString("url");
+			pic.url = photo.getJSONObject("photo").getJSONArray("images").getJSONObject(0).getString("url");
 			
 			//Get Bitmap
-			url = new URL(param[0].url);
+			url = new URL(pic.url);
 			HttpURLConnection conn2 = (HttpURLConnection)url.openConnection();
 			conn2.connect();
 			
 			
 			Bitmap large = BitmapFactory.decodeStream(conn2.getInputStream(), null, opt);
+			
+			if(height == 0 && width == 0)
+				return large;
 			
 			int real_height = opt.outHeight;
 			int real_width = opt.outWidth;
@@ -93,15 +113,15 @@ public class FetchImage extends AsyncTask<Picture, Void, Bitmap> {
 						
 		} catch (Exception e) {
 			e.printStackTrace();
-		}		
-		
+		}			
 		
 		return retval;
 	}
 	
 	protected void onPostExecute(Bitmap bmp){
 		image.setImageBitmap(bmp);
-		
+		if(manager != null)
+			manager.nextThread();
 	}
 
 	public int findSample(int img_width, int img_height, int req_width, int req_height){
