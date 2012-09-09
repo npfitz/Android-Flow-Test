@@ -50,16 +50,6 @@ public class FlowGenerator {
 					
 					((FlowTest)context.getApplicationContext()).getThreadManager().addTask(new FetchImage(iv, width*unit, height*unit, photos.elementAt(image_used)));
 					
-					/*
-					FetchImage fi = new FetchImage(iv, width*unit, height*unit, photos.elementAt(image_used));					
-					try{
-						fi.execute();
-					}
-					catch(Exception e){
-						System.out.println(e.toString());
-					}
-					*/
-					
 					photos.remove(image_used);
 					rl.addView(iv);
 					
@@ -69,8 +59,12 @@ public class FlowGenerator {
 					}								
 				}
 			}
-		}		
-		return rl;
+		}
+		
+		if(matrixFull(matrix))
+			return rl;
+		else
+			return null;
 	}
 	
 	

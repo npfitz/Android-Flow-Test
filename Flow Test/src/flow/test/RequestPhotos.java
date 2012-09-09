@@ -9,9 +9,10 @@ import javax.net.ssl.HttpsURLConnection;
 import org.json.JSONArray;
 import android.os.AsyncTask;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 
-public class RequestPhotos extends AsyncTask<Integer, Void, Vector<Picture>> {
+public class RequestPhotos extends AsyncTask<Void, Void, Vector<Picture>> {
 
 	LinearLayout flow;
 	
@@ -20,16 +21,19 @@ public class RequestPhotos extends AsyncTask<Integer, Void, Vector<Picture>> {
 	}
 	
 	@Override
-	protected Vector<Picture> doInBackground(Integer... page) {
-		
+	protected Vector<Picture> doInBackground(Void...voids) {
+			
 		URL url = null;
-		Vector<Picture> retval = new Vector<Picture>();
+		Vector<Picture> retval = ((FlowTest)flow.getContext().getApplicationContext()).getRepo();
 		
 		String feature = ((FlowTest)(flow.getContext().getApplicationContext())).getFeature();
 		
 		for(int j = 1; j < 3; j++){
 			try{
-				url = new URL("https://api.500px.com/v1/photos?feature="+feature+"&consumer_key=0lS9iBNZjRvSIdyPX42LW04uU3g7KiMvhvGDXqOW&page="+j);
+				int page_number = ((FlowTest)(flow.getContext().getApplicationContext())).get_page();
+				System.out.println(page_number);
+				url = new URL("https://api.500px.com/v1/photos?feature="+feature+"&consumer_key=0lS9iBNZjRvSIdyPX42LW04uU3g7KiMvhvGDXqOW&page="+page_number);
+				((FlowTest)(flow.getContext().getApplicationContext())).incrementPage();
 			}
 			catch(Exception e){
 				System.out.println(e.toString());			
@@ -65,11 +69,19 @@ public class RequestPhotos extends AsyncTask<Integer, Void, Vector<Picture>> {
 		int margin = 5;
 		
 		int unit = ((flow.getWidth() - (margin*5))/4);
-				
-		while(!photos.isEmpty()){
-			flow.addView(FlowGenerator.generateFlow(photos, unit, flow.getContext(), new LinearLayout.LayoutParams(flow.getWidth(), (flow.getWidth()/2) - margin), margin));		
+		
+		int i = 0;
+		
+		while(!photos.isEmpty() && i < 3){
+			RelativeLayout temp = FlowGenerator.generateFlow(photos, unit, flow.getContext(), new LinearLayout.LayoutParams(flow.getWidth(), (flow.getWidth()/2) - margin), margin);
+			
+			if(temp != null)			
+				flow.addView(temp);
+			
 			flow.invalidate();
+			i++;
 		}
+		((FlowTest)flow.getContext().getApplicationContext()).isSearching = false;
 				
 	}
 	

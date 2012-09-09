@@ -21,7 +21,7 @@ public class MainActivity extends Activity {
         flow = (LinearLayout)findViewById(R.id.flow);   
                       
         RequestPhotos rp = new RequestPhotos(flow);
-        rp.execute(1);       
+        rp.execute();       
     }
 
     @Override
@@ -41,15 +41,14 @@ public class MainActivity extends Activity {
 	    		popup.setOnMenuItemClickListener(new FlowSelectListener(flow));
 	        	popup.show();
 	        	return true;
-	    	case R.id.getFresh:
-	    		((FlowTest)getApplication()).setFeature("fresh_today");
-	    		flow.removeAllViews();
-	        	RequestPhotos rp = new RequestPhotos(flow);
-	            rp.execute(1);
-	            return true;
-    	
+	    	
     	}
     	return false; 	
+    }
+    
+    public void onDestroy(){
+    	super.onDestroy();
+        android.os.Process.killProcess(android.os.Process.myPid());
     }
     
 }
@@ -80,9 +79,12 @@ class FlowSelectListener implements OnMenuItemClickListener{
 			break;
 		}
 		((FlowTest)flow.getContext().getApplicationContext()).getThreadManager().clearQueue();
+		((FlowTest)flow.getContext().getApplicationContext()).getRepo().clear();
+		((FlowTest)flow.getContext().getApplicationContext()).reset_page();
 		flow.removeAllViews();
+		System.gc();
     	RequestPhotos rp = new RequestPhotos(flow);
-        rp.execute(1);
+        rp.execute();
         return true;
 	}
 	
