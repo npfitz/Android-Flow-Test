@@ -2,8 +2,6 @@ package flow.test;
 
 import java.util.Vector;
 
-import org.json.JSONArray;
-
 import android.content.Context;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;

@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     
     <uses-sdk
-        android:minSdkVersion="8"
+        android:minSdkVersion="14"
         android:targetSdkVersion="15" />
 
     <application
@@ -24,6 +24,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".Image" />
+        <activity android:name=".ConfigMenu"
+            android:theme="@android:style/Theme.Dialog"/>
     </application>
 
 </manifest>

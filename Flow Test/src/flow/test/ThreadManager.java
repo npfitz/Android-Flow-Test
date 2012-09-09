@@ -2,8 +2,6 @@ package flow.test;
 
 import java.util.Vector;
 
-import android.os.AsyncTask;
-
 public class ThreadManager {
 
 	Vector<FetchImage> queue;

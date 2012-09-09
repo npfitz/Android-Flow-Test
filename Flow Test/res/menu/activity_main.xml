@@ -1,6 +1,5 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/getPopular" android:title="Popular Flow"></item>
-    <item android:id="@+id/getFresh" android:title="Fresh Flow"></item>
-    <item android:id="@+id/getEditors" android:title="Editors Flow"></item>
-    <item android:id="@+id/getUpcoming" android:title="Upcoming Flow"></item>
+    <item android:id="@+id/flow_stream_select"
+        android:showAsAction="ifRoom"
+        android:title="Flow Stream"/>
 </menu>

@@ -5,6 +5,8 @@ import android.app.Activity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
+import android.widget.PopupMenu.OnMenuItemClickListener;
 
 
 public class MainActivity extends Activity {
@@ -16,41 +18,72 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         
-        flow = (LinearLayout)findViewById(R.id.flow);        
-        
+        flow = (LinearLayout)findViewById(R.id.flow);   
+                      
         RequestPhotos rp = new RequestPhotos(flow);
-        rp.execute(1);
-        
-        
+        rp.execute(1);       
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_main, menu);
+        
         return true;
     }
     
     public boolean onOptionsItemSelected (MenuItem item){
     	
-    	if(item.getItemId() == R.id.getFresh)
-    		((FlowTest)getApplication()).setFeature("fresh_today");
+    	switch(item.getItemId()){
     	
-    	if(item.getItemId() == R.id.getPopular)
-    		((FlowTest)getApplication()).setFeature("popular");
+	    	case R.id.flow_stream_select:
+	    		PopupMenu popup = new PopupMenu(this, findViewById(R.id.flow_stream_select));
+	        	popup.inflate(R.menu.flow_select_menu);
+	    		popup.setOnMenuItemClickListener(new FlowSelectListener(flow));
+	        	popup.show();
+	        	return true;
+	    	case R.id.getFresh:
+	    		((FlowTest)getApplication()).setFeature("fresh_today");
+	    		flow.removeAllViews();
+	        	RequestPhotos rp = new RequestPhotos(flow);
+	            rp.execute(1);
+	            return true;
     	
-    	if(item.getItemId() == R.id.getEditors)
-    		((FlowTest)getApplication()).setFeature("editors");
-    	
-    	if(item.getItemId() == R.id.getUpcoming)
-    		((FlowTest)getApplication()).setFeature("upcoming");
-    	
-    	((FlowTest)getApplication()).getThreadManager().clearQueue();
-    	
-    	flow.removeAllViews();
-    	RequestPhotos rp = new RequestPhotos(flow);
-        rp.execute(1);    	
-    	
-    	return true;
+    	}
+    	return false; 	
     }
     
+}
+
+class FlowSelectListener implements OnMenuItemClickListener{
+
+	LinearLayout flow;
+	
+	public FlowSelectListener(LinearLayout inFlow){
+		flow = inFlow;
+	}
+	public boolean onMenuItemClick(MenuItem item) {
+		switch(item.getItemId()){
+		case R.id.getFresh:
+			((FlowTest)flow.getContext().getApplicationContext()).setFeature("fresh_today");
+    		break;
+		
+		case R.id.getEditors:
+			((FlowTest)flow.getContext().getApplicationContext()).setFeature("editors");
+			break;
+		
+		case R.id.getPopular:
+			((FlowTest)flow.getContext().getApplicationContext()).setFeature("popular");
+			break;
+			
+		case R.id.getUpcoming:
+			((FlowTest)flow.getContext().getApplicationContext()).setFeature("upcoming");
+			break;
+		}
+		((FlowTest)flow.getContext().getApplicationContext()).getThreadManager().clearQueue();
+		flow.removeAllViews();
+    	RequestPhotos rp = new RequestPhotos(flow);
+        rp.execute(1);
+        return true;
+	}
+	
 }
