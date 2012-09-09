@@ -2,6 +2,7 @@ package flow.test;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
@@ -41,6 +42,14 @@ public class MainActivity extends Activity {
 	    		popup.setOnMenuItemClickListener(new FlowSelectListener(flow));
 	        	popup.show();
 	        	return true;
+	    	case R.id.tag_cloud_menu:
+	    		((FlowTest)flow.getContext().getApplicationContext()).getThreadManager().clearQueue();
+	    		((FlowTest)flow.getContext().getApplicationContext()).getRepo().clear();
+	    		((FlowTest)flow.getContext().getApplicationContext()).reset_page();
+	    		flow.removeAllViews();	    		
+	    		Intent myIntent = new Intent(this, CloudActivity.class);
+	    		this.startActivityForResult(myIntent, 4);
+	    		return true;
 	    	
     	}
     	return false; 	
@@ -51,6 +60,12 @@ public class MainActivity extends Activity {
         android.os.Process.killProcess(android.os.Process.myPid());
     }
     
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+    	if(requestCode == 4){
+    		RequestPhotos rp = new RequestPhotos(flow);
+            rp.execute();    
+    	}    	
+    }
 }
 
 class FlowSelectListener implements OnMenuItemClickListener{

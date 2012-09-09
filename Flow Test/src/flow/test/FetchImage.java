@@ -59,6 +59,8 @@ public class FetchImage extends AsyncTask<Void, Void, Bitmap> {
 		JSONObject photo = null;
 		
 		String base = "https://api.500px.com/v1/photos/";
+		
+		int real_height, real_width;
 		try {
 			
 			//Get image info
@@ -88,8 +90,8 @@ public class FetchImage extends AsyncTask<Void, Void, Bitmap> {
 			if(height == 0 && width == 0)
 				return large;
 			
-			int real_height = opt.outHeight;
-			int real_width = opt.outWidth;
+			real_height = opt.outHeight;
+			real_width = opt.outWidth;
 			
 			if((double)width/(double)height > 1.0){
 				int new_height = (int)(real_height / ((double)real_width/(double)width));

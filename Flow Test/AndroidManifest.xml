@@ -24,8 +24,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".Image" />
-        <activity android:name=".ConfigMenu"
-            android:theme="@android:style/Theme.Dialog"/>
+        <activity android:name=".CloudActivity"/>
     </application>
 
 </manifest>

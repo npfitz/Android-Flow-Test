@@ -27,12 +27,18 @@ public class RequestPhotos extends AsyncTask<Void, Void, Vector<Picture>> {
 		Vector<Picture> retval = ((FlowTest)flow.getContext().getApplicationContext()).getRepo();
 		
 		String feature = ((FlowTest)(flow.getContext().getApplicationContext())).getFeature();
+		String search = ((FlowTest)(flow.getContext().getApplicationContext())).get_Search();
 		
 		for(int j = 1; j < 3; j++){
 			try{
 				int page_number = ((FlowTest)(flow.getContext().getApplicationContext())).get_page();
-				System.out.println(page_number);
-				url = new URL("https://api.500px.com/v1/photos?feature="+feature+"&consumer_key=0lS9iBNZjRvSIdyPX42LW04uU3g7KiMvhvGDXqOW&page="+page_number);
+				String urlString = "https://api.500px.com/v1/photos?feature="+feature+"&consumer_key=0lS9iBNZjRvSIdyPX42LW04uU3g7KiMvhvGDXqOW&page="+page_number;
+				
+				if(search != null && !search.equals(""))
+					urlString = "https://api.500px.com/v1/photos/search?tag=" + search + "&page=" + page_number + "&consumer_key=0lS9iBNZjRvSIdyPX42LW04uU3g7KiMvhvGDXqOW";
+				
+				url = new URL(urlString);
+				
 				((FlowTest)(flow.getContext().getApplicationContext())).incrementPage();
 			}
 			catch(Exception e){

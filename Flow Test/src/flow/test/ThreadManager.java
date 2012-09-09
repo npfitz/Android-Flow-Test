@@ -36,6 +36,11 @@ public class ThreadManager {
 	
 	public void clearQueue(){
 		queue.clear();
+		
+		if(currentTask != null){
+			currentTask.cancel(true);
+			currentTask = null;
+		}
 	}
 	
 	public void nextThread(){

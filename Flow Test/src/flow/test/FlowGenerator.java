@@ -41,8 +41,7 @@ public class FlowGenerator {
 					params.topMargin = y * unit + ((y+1) * margin);
 					iv.setLayoutParams(params);
 					iv.setBackgroundColor(0xFF999999);
-					iv.setScaleType(ScaleType.CENTER_CROP);
-					
+					iv.setScaleType(ScaleType.CENTER_CROP);					
 					
 					int image_used = selectImage(photos, height, width);
 					

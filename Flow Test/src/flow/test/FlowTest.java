@@ -7,6 +7,7 @@ public class FlowTest extends Application {
 
 	private ThreadManager tm;
 	private String feature;
+	private String search_tag;
 	private Vector<Picture> picture_repo;
 	private int page_number;
 
@@ -19,6 +20,7 @@ public class FlowTest extends Application {
 		picture_repo = new Vector<Picture>();
 		page_number = 1;
 		isSearching = false;
+		search_tag = new String();
 	}
 	
 	
@@ -48,6 +50,14 @@ public class FlowTest extends Application {
 	
 	public int get_page(){
 		return page_number;
+	}
+	
+	public String get_Search(){
+		return search_tag;
+	}
+	
+	public void set_Search(String inSearch){
+		search_tag = inSearch;
 	}
 	
 }
